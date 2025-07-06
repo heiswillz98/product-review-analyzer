@@ -1,0 +1,33 @@
+.DS store # Node dependencies
+node_modules/
+
+# Build output
+dist/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# dotenv environment variables (optional)
+.env
+.env.*.local
+
+# IDEs and editors
+.vscode/
+.idea/
+.DS_Store
+
+# Coverage reports
+coverage/
+
+# Docker
+*.local
+docker-compose.override.yml
