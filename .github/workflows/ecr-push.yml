@@ -1,0 +1,44 @@
+name: Push Docker images to ECR
+
+on:
+  workflow_dispatch:
+
+jobs:
+  push-to-ecr:
+    name: Push Docker images to ECR
+    runs-on: ubuntu-latest
+
+    env:
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+      ECR_ACCOUNT_ID: ${{ secrets.ECR_ACCOUNT_ID }}
+      REPO_PREFIX: ${{ secrets.ECR_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build and Push ML Service
+        run: |
+          docker build -t ${{ env.REPO_PREFIX }}/ml-service ./ml-service
+          docker push ${{ env.REPO_PREFIX }}/ml-service
+
+      - name: Build and Push Backend
+        run: |
+          docker build -t ${{ env.REPO_PREFIX }}/backend ./backend
+          docker push ${{ env.REPO_PREFIX }}/backend
+
+      - name: Build and Push Frontend
+        run: |
+          docker build -t ${{ env.REPO_PREFIX }}/frontend ./frontend
+          docker push ${{ env.REPO_PREFIX }}/frontend
