@@ -28,15 +28,15 @@ jobs:
 
       - name: 🐳 Build and Push ML Service
         run: |
-          docker build -t $REPO_PREFIX/product-review-ml-service ./ml-service
-          docker push $REPO_PREFIX/product-review-ml-service
+          docker build -t ${{env.REPO_PREFIX}}/product-review-ml-service ./ml-service
+          docker push ${{env.REPO_PREFIX}}/product-review-ml-service
 
       - name: 🐳 Build and Push Backend
         run: |
-          docker build -t $REPO_PREFIX/product-review-backend ./backend
-          docker push $REPO_PREFIX/product-review-backend
+          docker build -t ${{env.REPO_PREFIX}}/product-review-backend ./backend
+          docker push ${{env.REPO_PREFIX}}/product-review-backend
 
       - name: 🐳 Build and Push Frontend
         run: |
-          docker build -t $REPO_PREFIX/product-review-frontend ./frontend
-          docker push $REPO_PREFIX/product-review-frontend
+          docker build -t ${{env.REPO_PREFIX}}/product-review-frontend ./frontend
+          docker push ${{env.REPO_PREFIX}}/product-review-frontend
