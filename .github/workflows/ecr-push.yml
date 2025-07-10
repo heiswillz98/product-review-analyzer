@@ -3,42 +3,40 @@ name: Push Docker images to ECR
 on:
   workflow_dispatch:
 
+env:
+  AWS_REGION: ${{ secrets.AWS_REGION }}
+  ECR_ACCOUNT_ID: ${{ secrets.ECR_ACCOUNT_ID }}
+  REPO_PREFIX: ${{ secrets.ECR_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
+
 jobs:
   push-to-ecr:
-    name: Push Docker images to ECR
     runs-on: ubuntu-latest
 
-    env:
-      AWS_REGION: ${{ secrets.AWS_REGION }}
-      ECR_ACCOUNT_ID: ${{ secrets.ECR_ACCOUNT_ID }}
-      REPO_PREFIX: ${{ secrets.ECR_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
-
     steps:
-      - name: Checkout
+      - name: 📥 Checkout code
         uses: actions/checkout@v4
 
-      - name: Configure AWS credentials
+      - name: 🔐 Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          aws-region: ${{ secrets.AWS_REGION }}
+          aws-region: ${{ env.AWS_REGION }}
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
-      - name: Login to Amazon ECR
-        id: login-ecr
+      - name: 🔑 Login to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Build and Push ML Service
+      - name: 🐳 Build and Push ML Service
         run: |
-          docker build -t ${{ env.REPO_PREFIX }}/ml-service ./ml-service
-          docker push ${{ env.REPO_PREFIX }}/ml-service
+          docker build -t $REPO_PREFIX/product-review-ml-service ./ml-service
+          docker push $REPO_PREFIX/product-review-ml-service
 
-      - name: Build and Push Backend
+      - name: 🐳 Build and Push Backend
         run: |
-          docker build -t ${{ env.REPO_PREFIX }}/backend ./backend
-          docker push ${{ env.REPO_PREFIX }}/backend
+          docker build -t $REPO_PREFIX/product-review-backend ./backend
+          docker push $REPO_PREFIX/product-review-backend
 
-      - name: Build and Push Frontend
+      - name: 🐳 Build and Push Frontend
         run: |
-          docker build -t ${{ env.REPO_PREFIX }}/frontend ./frontend
-          docker push ${{ env.REPO_PREFIX }}/frontend
+          docker build -t $REPO_PREFIX/product-review-frontend ./frontend
+          docker push $REPO_PREFIX/product-review-frontend
