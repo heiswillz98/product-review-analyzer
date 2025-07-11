@@ -33,3 +33,13 @@ coverage/
 docker-compose.override.yml
 
 hf-cache
+
+# Terraform
+*.tfstate
+*.tfstate.backup
+.terraform/
+terraform.tfvars
+.env
+.env.*
+secrets.*
+crash.log
