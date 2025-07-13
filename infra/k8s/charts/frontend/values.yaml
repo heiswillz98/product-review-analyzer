@@ -10,7 +10,7 @@ service:
   port: 80
 
 env:
-  NEXT_PUBLIC_API_URL: "http://ml-service-ml-service.product-review.svc.cluster.local"
+  VITE_API_URL: "http://ml-service-ml-service.product-review.svc.cluster.local"
 
 
 resources: {}
