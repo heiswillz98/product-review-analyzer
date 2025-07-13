@@ -10,11 +10,9 @@ service:
   port: 80
 
 env:
-  VITE_API_URL: "http://ad005a21fc7804281bed1b877868a6d2-2016181732.us-east-1.elb.amazonaws.com"
+  VITE_API_URL: "http://ad005a21fc7804281bed1b877868a6d2-2016181732.us-east-1.elb.amazonaws.com:5001"
 
 buildArgs:
-  VITE_API_URL: "http://ad005a21fc7804281bed1b877868a6d2-2016181732.us-east-1.elb.amazonaws.com"
+  VITE_API_URL: "http://ad005a21fc7804281bed1b877868a6d2-2016181732.us-east-1.elb.amazonaws.com:5001"
 
 
-
-resources: {}
