@@ -1,0 +1,12 @@
+replicaCount: 1
+
+image:
+  repository: 626635431082.dkr.ecr.us-east-1.amazonaws.com/product-review-frontend
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  type: LoadBalancer
+  port: 80
+
+resources: {}

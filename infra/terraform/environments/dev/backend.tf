@@ -1,8 +1,8 @@
 terraform {
   backend "s3" {
-    bucket  = "your-terraform-state-bucket"
-    key     = "your-terraform-state-key"
-    region  = "your-terraform-state-region"
+    bucket  = "product-review-tfstate"
+    key     = "dev/terraform.tfstate"
+    region  = "us-east-1"
     encrypt = true
   }
 }
