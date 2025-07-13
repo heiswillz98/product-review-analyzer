@@ -12,7 +12,7 @@ router.post("/", async (req: Request, res: Response) => {
   }
 
   try {
-    const mlResponse = await axios.post("http://ml-service:8000/predict", {
+    const mlResponse = await axios.post("http://ml-service-ml-service:8000/predict", {
       text,
     });
     res.json(mlResponse.data);
