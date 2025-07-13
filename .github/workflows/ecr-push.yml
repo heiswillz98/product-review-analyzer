@@ -44,5 +44,5 @@ jobs:
            VERSION="v1.0.3"
            docker build \
             --build-arg VITE_API_URL=http://ad005a21fc7804281bed1b877868a6d2-2016181732.us-east-1.elb.amazonaws.com:5001 \
-            -t ${{env.REPO_PREFIX}}/product-review-frontend ./frontend
+            -t ${{env.REPO_PREFIX}}/product-review-frontend:$VERSION ./frontend
            docker push ${{env.REPO_PREFIX}}/product-review-frontend:$VERSION
