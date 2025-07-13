@@ -42,6 +42,6 @@ jobs:
       - name: 🐳 Build and Push Frontend
         run: |
            docker build \
-            --build-arg VITE_API_URL=http://ml-service-ml-service.product-review.svc.cluster.local \
+            --build-arg VITE_API_URL=http://ad005a21fc7804281bed1b877868a6d2-2016181732.us-east-1.elb.amazonaws.com \
             -t ${{env.REPO_PREFIX}}/product-review-frontend ./frontend
            docker push ${{env.REPO_PREFIX}}/product-review-frontend

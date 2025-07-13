@@ -19,5 +19,5 @@ spec:
           ports:
             - containerPort: 80
           env:
-            - name: NEXT_PUBLIC_API_URL
-              value: {{ .Values.env.NEXT_PUBLIC_API_URL }}
+            - name: VITE_API_URL
+              value: {{ .Values.env.VITE_API_URL }}

@@ -10,7 +10,11 @@ service:
   port: 80
 
 env:
-  VITE_API_URL: "http://ml-service-ml-service.product-review.svc.cluster.local"
+  VITE_API_URL: "http://ad005a21fc7804281bed1b877868a6d2-2016181732.us-east-1.elb.amazonaws.com"
+
+buildArgs:
+  VITE_API_URL: "http://ad005a21fc7804281bed1b877868a6d2-2016181732.us-east-1.elb.amazonaws.com"
+
 
 
 resources: {}
