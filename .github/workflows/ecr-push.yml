@@ -31,8 +31,9 @@ jobs:
 
       - name: 🐳 Build and Push ML Service
         run: |
-          docker build -t ${{env.REPO_PREFIX}}/product-review-ml-service ./ml-service
-          docker push ${{env.REPO_PREFIX}}/product-review-ml-service
+          VERSION="v1.0.3"
+          docker build -t ${{env.REPO_PREFIX}}/product-review-ml-service:$VERSION ./ml-service
+          docker push ${{env.REPO_PREFIX}}/product-review-ml-service:$VERSION
 
       - name: 🐳 Build and Push Backend
         run: |

@@ -16,8 +16,8 @@ LABEL_GROUPS = {
 
 try:
     logger.info("📦 Loading model...")
-    # classifier = pipeline("text-classification", model="SamLowe/roberta-base-go_emotions", top_k=1)
-    classifier = pipeline("text-classification", model="SamLowe/roberta-base-go_emotions", top_k=1, cache_dir="/app/.hf_cache")
+    classifier = pipeline("text-classification", model="SamLowe/roberta-base-go_emotions", top_k=1)
+    # classifier = pipeline("text-classification", model="SamLowe/roberta-base-go_emotions", top_k=1, cache_dir="/app/.hf_cache")
     logger.info("✅ Model loaded!")
 except Exception as e:
     logger.exception("❌ Failed to load model")
