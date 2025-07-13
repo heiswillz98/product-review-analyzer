@@ -18,11 +18,13 @@ function App() {
       const res = await axios.post(`${import.meta.env.VITE_API_URL}/analyze`, {
         text,
       });
+      console.log('VITE_API_URL:', import.meta.env.VITE_API_URL);
       setResult(res.data);
     } catch (err) {
       alert("Error analyzing sentiment");
     } finally {
       setLoading(false);
+    
     }
   };
 
