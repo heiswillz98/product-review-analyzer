@@ -13,8 +13,8 @@ env:
   EKS_CLUSTER_NAME: product-review-cluster
   HELM_RELEASE_NAME: product-review
   K8S_NAMESPACE: product-review
-  BACKEND_SERVICE_NAME: backend 
-  FRONTEND_SERVICE_NAME: frontend 
+  BACKEND_SERVICE_NAME: backend
+  FRONTEND_SERVICE_NAME: frontend
 
 jobs:
   push-to-ecr:
@@ -76,36 +76,58 @@ jobs:
         run: |
           aws eks update-kubeconfig --region ${{ env.AWS_REGION }} --name ${{ env.EKS_CLUSTER_NAME }}
 
+      - name: 🛠 Create Namespace
+        run: |
+          kubectl create namespace ${{ env.K8S_NAMESPACE }} --dry-run=client -o yaml | kubectl apply -f -
+
+      - name: 🚀 Deploy ML Service Helm Chart
+        run: |
+          helm upgrade --install ${{ env.HELM_RELEASE_NAME }}-ml ./infra/k8s/charts/ml-service \
+            --namespace ${{ env.K8S_NAMESPACE }} \
+            --create-namespace \
+            --set image.repository=${{ env.REPO_PREFIX }}/product-review-ml-service \
+            --set image.tag=${{ needs.push-to-ecr.outputs.version }} \
+            --set image.pullPolicy=Always
+
+      - name: 🚀 Deploy Backend Helm Chart
+        run: |
+          helm upgrade --install ${{ env.HELM_RELEASE_NAME }}-backend ./infra/k8s/charts/backend \
+            --namespace ${{ env.K8S_NAMESPACE }} \
+            --create-namespace \
+            --set image.repository=${{ env.REPO_PREFIX }}/product-review-backend \
+            --set image.tag=${{ needs.push-to-ecr.outputs.version }} \
+            --set image.pullPolicy=Always
+
       - name: 🌐 Get Backend Load Balancer Address
         id: get-lb
         run: |
-          LB_HOSTNAME=$(kubectl get svc -n ${{ env.K8S_NAMESPACE }} ${{ env.BACKEND_SERVICE_NAME }} -o jsonpath='{.status.loadBalancer.ingress[0].hostname}' || echo "")
-          if [ -z "$LB_HOSTNAME" ]; then
-            echo "Error: Could not retrieve backend load balancer hostname. Ensure the service exists and has an ingress."
-            exit 1
-          fi
-          echo "lb_hostname=http://${LB_HOSTNAME}:5001" >> $GITHUB_OUTPUT
+          MAX_ATTEMPTS=5
+          ATTEMPT=1
+          while [ $ATTEMPT -le $MAX_ATTEMPTS ]; do
+            LB_HOSTNAME=$(kubectl get svc -n ${{ env.K8S_NAMESPACE }} ${{ env.BACKEND_SERVICE_NAME }} -o jsonpath='{.status.loadBalancer.ingress[0].hostname}' || echo "")
+            if [ -n "$LB_HOSTNAME" ]; then
+              echo "Backend load balancer hostname found: $LB_HOSTNAME"
+              echo "lb_hostname=http://${LB_HOSTNAME}:5001" >> $GITHUB_OUTPUT
+              exit 0
+            fi
+            echo "Attempt $ATTEMPT: Backend load balancer hostname not found. Retrying in 30 seconds..."
+            sleep 30
+            ATTEMPT=$((ATTEMPT + 1))
+          done
+          echo "Error: Could not retrieve backend load balancer hostname after $MAX_ATTEMPTS attempts."
+          kubectl get svc -n ${{ env.K8S_NAMESPACE }} -o wide
+          kubectl describe svc -n ${{ env.K8S_NAMESPACE }} ${{ env.BACKEND_SERVICE_NAME }}
+          exit 1
 
-      - name: 🛠 Install Helm
-        uses: azure/setup-helm@v4
-        with:
-          version: 'v3.12.0'
-
-      - name: 🚀 Deploy Helm Chart
+      - name: 🚀 Deploy Frontend Helm Chart
         run: |
-          helm upgrade --install ${{ env.HELM_RELEASE_NAME }} ./helm \
+          helm upgrade --install ${{ env.HELM_RELEASE_NAME }}-frontend ./infra/k8s/charts/frontend \
             --namespace ${{ env.K8S_NAMESPACE }} \
             --create-namespace \
-            --set mlService.image.repository=${{ env.REPO_PREFIX }}/product-review-ml-service \
-            --set mlService.image.tag=${{ needs.push-to-ecr.outputs.version }} \
-            --set mlService.image.pullPolicy=Always \
-            --set backend.image.repository=${{ env.REPO_PREFIX }}/product-review-backend \
-            --set backend.image.tag=${{ needs.push-to-ecr.outputs.version }} \
-            --set backend.image.pullPolicy=Always \
-            --set frontend.image.repository=${{ env.REPO_PREFIX }}/product-review-frontend \
-            --set frontend.image.tag=${{ needs.push-to-ecr.outputs.version }} \
-            --set frontend.image.pullPolicy=Always \
-            --set frontend.env.VITE_API_URL=${{ steps.get-lb.outputs.lb_hostname }}
+            --set image.repository=${{ env.REPO_PREFIX }}/product-review-frontend \
+            --set image.tag=${{ needs.push-to-ecr.outputs.version }} \
+            --set image.pullPolicy=Always \
+            --set env.VITE_API_URL=${{ steps.get-lb.outputs.lb_hostname }}
 
       - name: 📋 Log Frontend and Backend Service Details
         run: |
