@@ -12,13 +12,14 @@ function App() {
   const [result, setResult] = useState<SentimentResult | null>(null);
   const [loading, setLoading] = useState(false);
 
+  const apiUrl = import.meta.env.VITE_API_URL || 'http://default-backend-url:5001';
   const analyze = async () => {
     setLoading(true);
     try {
-      const res = await axios.post(`${import.meta.env.VITE_API_URL}/analyze`, {
+      const res = await axios.post(`${apiUrl}/analyze`, {
         text,
       });
-      console.log('VITE_API_URL:', import.meta.env.VITE_API_URL);
+      console.log('VITE_API_URL:', apiUrl);
       setResult(res.data);
     } catch (err) {
       alert("Error analyzing sentiment");

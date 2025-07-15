@@ -94,9 +94,7 @@ jobs:
       - name: 🐳 Build and Push Frontend
         if: steps.check-frontend-changes.outputs.changes_detected == 'true'
         run: |
-          docker build \
-            --build-arg VITE_API_URL=http://placeholder \
-            -t ${{ env.REPO_PREFIX }}/product-review-frontend:${{ steps.set-version.outputs.version }} ./frontend
+          docker build -t ${{ env.REPO_PREFIX }}/product-review-frontend:${{ steps.set-version.outputs.version }} ./frontend
           docker push ${{ env.REPO_PREFIX }}/product-review-frontend:${{ steps.set-version.outputs.version }}
 
   deploy-helm:
@@ -124,7 +122,7 @@ jobs:
       - name: 🚀 Deploy ML Service Helm Chart
         if: needs.push-to-ecr.outputs.ml_changes == 'true'
         run: |
-          helm upgrade --install ${{ env.HELM_RELEASE_NAME }}-ml ./infra/k8s/charts/ml-service \
+          helm upgrade --install ml-service ./infra/k8s/charts/ml-service \
             --namespace ${{ env.K8S_NAMESPACE }} \
             --create-namespace \
             --set image.repository=${{ env.REPO_PREFIX }}/product-review-ml-service \
@@ -192,21 +190,13 @@ jobs:
           echo "Warning: Could not retrieve frontend load balancer hostname after $MAX_ATTEMPTS attempts."
           kubectl get svc -n ${{ env.K8S_NAMESPACE }} -o wide
           kubectl describe svc -n ${{ env.K8S_NAMESPACE }} ${{ env.FRONTEND_SERVICE_NAME }}
+          kubectl get events -n ${{ env.K8S_NAMESPACE }} --field-selector involvedObject.name=${{ env.FRONTEND_SERVICE_NAME }}
           exit 0
 
       - name: 📋 Log Frontend and Backend Service Details
         run: |
           echo "Fetching service details for namespace ${{ env.K8S_NAMESPACE }}"
           kubectl get svc -n ${{ env.K8S_NAMESPACE }} -o wide
-
-
-
-
-
-
-
-
-
 
 
 
