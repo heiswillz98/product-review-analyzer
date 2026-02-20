@@ -1,6 +1,6 @@
 fastapi
 uvicorn
 transformers
-torch==2.2.2+cpu
+torch==2.7.1
 numpy<2
 -f https://download.pytorch.org/whl/cpu/torch_stable.html
